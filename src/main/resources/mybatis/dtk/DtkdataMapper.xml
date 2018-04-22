@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caocao.dtk.dao.DtkdataDao">
+
+	<select id="get" resultType="com.caocao.dtk.domain.DtkdataDO">
+		select `api_type`,`update_time`,`total_num`,`update_content` from dtkdata where api_type = #{value}
+	</select>
+
+	<select id="list" resultType="com.caocao.dtk.domain.DtkdataDO">
+		select `api_type`,`update_time`,`total_num`,`update_content` from dtkdata
+        <where>  
+		  		  <if test="apiType != null and apiType != ''"> and api_type = #{apiType} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="totalNum != null and totalNum != ''"> and total_num = #{totalNum} </if>
+		  		  <if test="updateContent != null and updateContent != ''"> and update_content = #{updateContent} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by api_type desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from dtkdata
+		 <where>  
+		  		  <if test="apiType != null and apiType != ''"> and api_type = #{apiType} </if>
+		  		  <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+		  		  <if test="totalNum != null and totalNum != ''"> and total_num = #{totalNum} </if>
+		  		  <if test="updateContent != null and updateContent != ''"> and update_content = #{updateContent} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.caocao.dtk.domain.DtkdataDO">
+		insert into dtkdata
+		(
+			`api_type`, 
+			`update_time`, 
+			`total_num`, 
+			`update_content`
+		)
+		values
+		(
+			#{apiType}, 
+			#{updateTime}, 
+			#{totalNum}, 
+			#{updateContent}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.caocao.dtk.domain.DtkdataDO">
+		update dtkdata 
+		<set>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="totalNum != null">`total_num` = #{totalNum}, </if>
+			<if test="updateContent != null">`update_content` = #{updateContent}</if>
+		</set>
+		where api_type = #{apiType}
+	</update>
+	
+	<delete id="remove">
+		delete from dtkdata where api_type = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from dtkdata where api_type in 
+		<foreach item="apiType" collection="array" open="(" separator="," close=")">
+			#{apiType}
+		</foreach>
+	</delete>
+
+</mapper>
